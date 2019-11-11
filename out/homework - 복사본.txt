@@ -1,0 +1,120 @@
+import numpy as np
+import cv2
+
+#def eventspace() :
+    
+
+def draw_countdown():
+    
+    #fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    #out = cv2.VideoWriter('homework.mp4',fourcc,10.0,(512,512))
+    img = cv2.imread('data/lena.jpg')
+    img2 = cv2.imread('data/apple.jpg')
+    img3 = cv2.imread('data/banana.jpg')
+    img4 = cv2.imread('data/baboon.jpg')
+    time_ms = 50
+    sw = 1 
+    org = (400,100)
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    
+    img_arr = [img,img2,img3,img4]
+    
+    N=32
+    
+    rows , cols , channels = img.shape
+    h, w = rows//N , cols//N
+    bingle , size1 , size0 = 0 , 1.0 , 0.0
+    size1_2,size0_2 = 1.0 ,0.0
+    ang = 9
+    plu = 0.025
+    count_frame = 0
+    counter40 = 0
+    i = 0
+    
+    while True :
+        count_frame += 1
+        counter40 += 1
+        
+        frame = img_arr[i]
+        view = frame.copy()
+        
+        if count_frame < 40 :
+            if i == 0 : 
+                continue
+            elif i == 1 :
+                bingle = counter40 * ang
+                size0 += plu
+                M1 = cv2.getRotationMatrix2D((rows / 2 , cols /2), bingle , size0)
+                view = cv2.warpAffine(view,M1,(rows,cols))
+            elif i == 2 :
+                continue
+            
+            else :
+                size0_2 += 0.025
+                M1 = cv2.getRotationMatrix2D((rows / 2 , cols /2), bingle , size0_2)
+                view = cv2.warpAffine(view,M1,(rows,cols))
+                #view = cv2.resize()
+        
+        elif count_frame > 80 : 
+            if i == 0 :
+                bingle = counter40 * ang
+                size1 -= plu
+                M1 = cv2.getRotationMatrix2D((rows / 2 , cols /2), bingle , size1)
+                view = cv2.warpAffine(view,M1,(rows,cols))
+            elif i == 1 :
+                continue
+                
+            elif i == 2 :
+                size1_2 -= 0.025
+                M1 = cv2.getRotationMatrix2D((rows / 2 , cols /2), bingle , size1_2)
+                view = cv2.warpAffine(view,M1,(rows,cols))
+                #view_re = cv2.resize()
+            
+            else : 
+                continue
+        
+        
+        if sw == 1 :
+            time_ms = 50
+            text = 'Play'
+            cv2.putText(view,text,org,font,1,(0,255,0),2)
+        elif sw == 0 :
+            text = 'Stop'
+            cv2.putText(view,text,org,font,1,(0,0,255),2)
+          
+        
+        if counter40 == 40 :
+            counter40 = 1
+            
+        if count_frame == 120 :
+            if sw == 1 :
+                i += 1
+            elif sw == 0 :
+                i = i
+                counter40 = counter40
+            count_frame = 1
+        
+        if i == 4 :
+            break
+        
+        #out.write(img)
+        cv2.imshow('img',view)
+
+            
+        k = cv2.waitKey(time_ms)
+        
+        if k == 27 :
+            break
+        elif k == ord(' ') :
+            if sw == 0 :
+                sw = 1 
+            else :
+                sw = 0
+                
+            
+                
+            
+    #out.release()
+    cv2.destroyAllWindows()
+
+draw_countdown()
